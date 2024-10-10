@@ -7,6 +7,7 @@ import { NavBar } from './components';
 const App = () => {
   return (
     <View style={tw`bg-white`}>
+      <NavBar />
       <View style={tw`items-center justify-center`}>
         <Text style={tw`text-black text-lg`}>Hello!</Text>
       </View>
