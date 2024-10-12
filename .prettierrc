@@ -1,8 +1,6 @@
 {
   "printWidth": 120,
-  "importOrder": [
-    "^[./]"
-  ],
+  "importOrder": ["^components/(.*)$", "^[./]"],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true,
   "importOrderBuiltinModulesToTop": true,
