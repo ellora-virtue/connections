@@ -1,17 +1,20 @@
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 
 import tw from 'twrnc';
+import { Game, NavBar } from './components';
+import { ConnectionsContext, useProvideConnectionsState } from './context';
 import './styles.css';
-import { NavBar } from './components';
 
 const App = () => {
+  const contextState = useProvideConnectionsState();
+
   return (
-    <View style={tw`bg-white`}>
+    <ConnectionsContext.Provider value={contextState}>
       <NavBar />
-      <View style={tw`items-center justify-center`}>
-        <Text style={tw`text-black text-lg`}>Hello!</Text>
+      <View style={tw`bg-white py-6 `}>
+        <Game />
       </View>
-    </View>
+    </ConnectionsContext.Provider>
   );
 };
 

@@ -2,19 +2,19 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 
 import { SafeAreaView, View } from 'react-native';
-import tailwind from 'twrnc';
+import tw from 'twrnc';
 
 // TODO: add actions to icons (currently don't do anything)
 
 export const NavBar = () => {
   return (
     <SafeAreaView>
-      <View style={tailwind`flex-row items-center justify-between border-b-2 border-gray-200 p-4`}>
+      <View style={tw`flex-row items-center justify-between border-b-2 border-gray-200 p-4`}>
         <Icon
           name="chevron-back"
           size={24}
         />
-        <View style={tailwind`flex-row items-center gap-3`}>
+        <View style={tw`flex-row items-center gap-3`}>
           <FAIcon
             name="cog"
             size={20}
