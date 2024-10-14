@@ -1,5 +1,5 @@
 import { createContext, Dispatch, SetStateAction, useState } from 'react';
-import { Dimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import { useRequiredContext } from '../hooks';
 import { GAME_DATA } from '../data/gameData';
 import { Tile } from '../@types';
@@ -31,7 +31,7 @@ export const ConnectionsContext = createContext<ConnectionsContextValue | null>(
 export const useConnectionsContext = () => useRequiredContext(ConnectionsContext);
 
 export const useProvideConnectionsState = (): ConnectionsContextValue => {
-  const { width: screenWidth } = Dimensions.get('screen');
+  const { width: screenWidth } = useWindowDimensions();
   const tileWidth = (screenWidth - TOTAL_HORIZONTAL_PADDING - TOTAL_TILES_PADDING) / NUMBER_OF_TILES;
   const tileTextOpacity = useSharedValue(1);
 
