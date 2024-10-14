@@ -1,7 +1,7 @@
 import { View } from 'react-native';
+import tw from 'twrnc';
 import { useConnectionsContext } from '../context';
 import { Button } from './Button';
-import tw from 'twrnc';
 
 export const Actions = () => {
   const { selectedTiles, shuffleUnguessedTiles, handleDeselectAll } = useConnectionsContext();

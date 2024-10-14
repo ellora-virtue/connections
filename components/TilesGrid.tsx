@@ -1,6 +1,6 @@
+import chunk from 'lodash/chunk';
 import { PropsWithChildren, useMemo } from 'react';
 import { View } from 'react-native';
-import chunk from 'lodash/chunk';
 import tw from 'twrnc';
 
 import { Tile as TileType } from '../@types';

@@ -1,5 +1,5 @@
-import Icon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import { SafeAreaView, View } from 'react-native';
 import tw from 'twrnc';

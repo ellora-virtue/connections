@@ -1,8 +1,8 @@
 import { Text, View } from 'react-native';
 import tw from 'twrnc';
 import { Actions } from './Actions';
-import { TilesGrid } from './TilesGrid';
 import { MistakesRemaining } from './MistakesRemaining';
+import { TilesGrid } from './TilesGrid';
 
 export const Game = () => {
   return (

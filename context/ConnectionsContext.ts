@@ -1,10 +1,10 @@
+import shuffle from 'lodash/shuffle';
 import { createContext, Dispatch, SetStateAction, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
-import { useRequiredContext } from '../hooks';
-import { GAME_DATA } from '../data/gameData';
-import { Tile } from '../@types';
-import shuffle from 'lodash/shuffle';
 import { runOnJS, SharedValue, useSharedValue, withTiming } from 'react-native-reanimated';
+import { Tile } from '../@types';
+import { GAME_DATA } from '../data/gameData';
+import { useRequiredContext } from '../hooks';
 
 const TOTAL_HORIZONTAL_PADDING = 16;
 const TOTAL_TILES_PADDING = 24;

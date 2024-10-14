@@ -1,7 +1,6 @@
 import { Text, View } from 'react-native';
-import { useConnectionsContext } from '../context';
-import { Button } from './Button';
 import tw from 'twrnc';
+import { useConnectionsContext } from '../context';
 
 export const MistakesRemaining = () => {
   const { mistakesRemaining } = useConnectionsContext();
