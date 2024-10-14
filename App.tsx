@@ -10,9 +10,11 @@ const App = () => {
 
   return (
     <ConnectionsContext.Provider value={contextState}>
-      <NavBar />
-      <View style={tw`bg-white py-6 `}>
-        <Game />
+      <View style={tw`flex-col w-full`}>
+        <NavBar />
+        <View style={tw`bg-white py-6 `}>
+          <Game />
+        </View>
       </View>
     </ConnectionsContext.Provider>
   );
