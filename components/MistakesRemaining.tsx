@@ -1,6 +1,7 @@
 import { Text, View } from 'react-native';
 import tw from 'twrnc';
 import { useConnectionsContext } from '../context';
+import { COLORS } from '../constants';
 
 export const MistakesRemaining = () => {
   const { mistakesRemaining } = useConnectionsContext();
@@ -15,5 +16,4 @@ export const MistakesRemaining = () => {
   );
 };
 
-// TODO: extract colours
-const Dot = () => <View style={tw`w-4 h-4 rounded-full bg-[#5a594e]`} />;
+const Dot = () => <View style={tw`w-4 h-4 rounded-full bg-[${COLORS.surface.dark}]`} />;
