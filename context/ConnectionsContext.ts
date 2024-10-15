@@ -79,7 +79,7 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
   const shuffleUnguessedTiles = () => {
     // Fade out first
     tileTextOpacity.value = withTiming(0, { duration: 150 }, (isFinished) => {
-      if (isFinished) {
+      if (isFinished === true) {
         // Shuffle and fade back in
         runOnJS(shuffleTiles)();
       }

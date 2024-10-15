@@ -3,6 +3,6 @@
   "compilerOptions": {
     "noEmit": true
   },
-  "include": ["*", "**/*"],
+  "include": ["*", "**/*", "babel.config.js", "tailwind.config.js"],
   "exclude": ["node_modules"]
 }

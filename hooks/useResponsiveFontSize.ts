@@ -25,7 +25,7 @@ export const useResponsiveFontSize = ({ word, tileWidth }: { word: string; tileW
   const characters = word.length;
 
   const getFontSize = (sizes: { maxChars: number; size: number }[]) =>
-    sizes.find(({ maxChars }) => characters >= maxChars)?.size || 16;
+    sizes.find(({ maxChars }) => characters >= maxChars)?.size ?? 16;
 
   if (tileWidth < TILE_SIZES.small) {
     return getFontSize(FONT_SIZES.small);
