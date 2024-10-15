@@ -11,6 +11,7 @@ export const MistakesRemaining = () => {
     <View style={tw`flex-row items-center gap-3`}>
       <Text style={tw`text-base`}>Mistakes remaining:</Text>
       {Array.from({ length: mistakesRemaining }).map((item, index) => (
+        // eslint-disable-next-line react/no-array-index-key
         <Dot key={index} />
       ))}
     </View>

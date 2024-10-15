@@ -22,11 +22,9 @@ export const Tile = ({ word }: TileProps) => {
 
   const onTilePress = () => handleTilePress(word);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: tileTextOpacity.value,
-    };
-  });
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: tileTextOpacity.value,
+  }));
 
   return (
     <Pressable

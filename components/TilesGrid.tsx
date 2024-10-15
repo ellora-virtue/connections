@@ -1,6 +1,5 @@
-import React from 'react';
 import chunk from 'lodash/chunk';
-import { PropsWithChildren, useMemo } from 'react';
+import React, { PropsWithChildren, useMemo } from 'react';
 import { View } from 'react-native';
 import tw from 'twrnc';
 
@@ -25,13 +24,12 @@ export const TilesGrid = () => {
   );
 };
 
-const renderRow = (tiles: TileType[]) => {
-  return tiles.map((tile) => (
+const renderRow = (tiles: TileType[]) =>
+  tiles.map((tile) => (
     <Tile
       key={tile.word}
       word={tile.word}
     />
   ));
-};
 
 const TileRow = ({ children }: PropsWithChildren) => <View style={tw`flex-row gap-2`}>{children}</View>;

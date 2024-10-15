@@ -1,0 +1,95 @@
+{
+  "root": true,
+  "extends": [
+    "airbnb",
+    "airbnb-typescript",
+    "airbnb/hooks",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "prettier",
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "deprecation"],
+  "parserOptions": {
+    "project": "./tsconfig.json",
+  },
+  "rules": {
+    "no-unused-vars": "off", // Note: you must disable the base rule as it can report incorrect errors
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_",
+      },
+    ],
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-redeclare": "off",
+    "@typescript-eslint/no-duplicate-enum-values": "error",
+    "no-void": ["error", { "allowAsStatement": true }],
+    "deprecation/deprecation": "warn",
+    "max-len": [
+      "error",
+      {
+        "code": 220,
+        "ignoreStrings": true,
+        "ignoreComments": true,
+        "ignoreTrailingComments": true,
+        "ignoreUrls": true,
+        "ignoreTemplateLiterals": true,
+        "ignoreRegExpLiterals": true,
+      },
+    ],
+    "react/prop-types": "off",
+    "import/no-extraneous-dependencies": ["error", { "packageDir": ["./"] }],
+    "react/jsx-props-no-spreading": "off",
+    "import/prefer-default-export": "off",
+    "@typescript-eslint/unbound-method": "warn",
+    "no-param-reassign": ["error", { "props": true, "ignorePropertyModificationsFor": ["state"] }],
+    "import/no-named-as-default": "warn",
+    "no-underscore-dangle": "off",
+    "default-case": "off",
+    "consistent-return": "off", // caught by TS if inconsistent
+    "array-callback-return": "off", // caught by TS if inconsistent
+    "react/no-unescaped-entities": "off", // caught by TS if inconsistent
+    "react/require-default-props": "off",
+    "@typescript-eslint/no-misused-promises": ["error", { "checksVoidReturn": false }],
+    "@typescript-eslint/member-delimiter-style": "error",
+    "@typescript-eslint/strict-boolean-expressions": [
+      "error",
+      {
+        "allowString": false,
+        "allowNumber": false,
+        "allowNullableObject": false,
+        "allowNullableBoolean": false,
+        "allowNullableString": false,
+        "allowNullableNumber": false,
+        "allowAny": false,
+        "allowRuleToRunWithoutStrictNullChecksIKnowWhatIAmDoing": false,
+      },
+    ],
+    "react/state-in-constructor": "off",
+    "react/function-component-definition": "off",
+    "react/jsx-first-prop-new-line": ["error", "multiline"],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "class-methods-use-this": "off",
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "leadingUnderscore": "allow",
+        "selector": "variable",
+        "format": ["camelCase", "PascalCase", "UPPER_CASE"],
+      },
+      {
+        "leadingUnderscore": "allow",
+        "selector": "function",
+        "format": ["camelCase", "PascalCase"],
+      },
+      {
+        "selector": "typeLike",
+        "format": ["PascalCase"],
+      },
+    ],
+  },
+}
