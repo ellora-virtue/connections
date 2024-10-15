@@ -28,13 +28,13 @@ export const Tile = ({ word }: TileProps) => {
 
   return (
     <Pressable
-      style={tw`py-4 px-2 ${isSelected ? `bg-[${COLORS.surface.dark}]` : `bg-[${COLORS.surface.light}]`} rounded-lg items-center justify-center w-[${tileWidth}px] max-w-[${MAX_TILE_WIDTH}px] h-[${TILE_HEIGHT}px]`}
+      style={tw`py-4 ${isSelected ? `bg-[${COLORS.surface.dark}]` : `bg-[${COLORS.surface.light}]`} items-center justify-center rounded-lg px-2 w-[${tileWidth}px] max-w-[${MAX_TILE_WIDTH}px] h-[${TILE_HEIGHT}px]`}
       onPress={onTilePress}
     >
       <Animated.Text
         style={[
-          tw`uppercase text-[${fontSize}px] text-center tracking-tight ${isSelected ? 'text-white' : 'text-black'} font-bold`,
           animatedStyle,
+          tw`text-center font-bold uppercase text-[${fontSize}px] tracking-tight ${isSelected ? 'text-white' : 'text-black'}`,
         ]}
       >
         {word}
