@@ -1,3 +1,4 @@
+import React from 'react';
 import chunk from 'lodash/chunk';
 import { PropsWithChildren, useMemo } from 'react';
 import { View } from 'react-native';
