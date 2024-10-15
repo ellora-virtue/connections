@@ -3,7 +3,9 @@ export const COLORS = {
     disabled: '#7f7f7f',
   },
   surface: {
-    light: 'efeee6',
+    white: '#ffffff',
+    light: '#efeee6',
     dark: '#5a594e',
+    black: '#000000',
   },
 };

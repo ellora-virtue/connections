@@ -15,12 +15,12 @@ export const Actions = () => {
       <Button
         onPress={handleDeselectAll}
         label="Deselect all"
-        disabled={selectedTiles.size === 0}
+        mode={selectedTiles.size === 0 ? 'disabled' : 'default'}
       />
       <Button
         onPress={handleDeselectAll}
         label="Submit"
-        disabled={selectedTiles.size !== 4}
+        mode={selectedTiles.size !== 4 ? 'disabled' : 'active'}
       />
     </View>
   );
