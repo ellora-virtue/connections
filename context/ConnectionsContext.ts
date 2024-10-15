@@ -17,7 +17,7 @@ export type ConnectionsContextValue = {
   unguessedTiles: Tile[];
 
   selectedTiles: Set<Tile['word']>;
-  handleTilePress: (word: string) => void;
+  onTilePress: (word: string) => void;
 
   mistakesRemaining: number;
   setMistakesRemaining: Dispatch<SetStateAction<number>>;
@@ -50,7 +50,7 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
   const [selectedTiles, setSelectedTiles] = useState<Set<Tile['word']>>(new Set());
   const [mistakesRemaining, setMistakesRemaining] = useState(4);
 
-  const handleTilePress = (word: Tile['word']) => {
+  const onTilePress = (word: Tile['word']) => {
     const isSelected = selectedTiles.has(word);
 
     if (isSelected) {
@@ -96,7 +96,7 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
     tileTextOpacity,
     unguessedTiles,
     selectedTiles,
-    handleTilePress,
+    onTilePress,
     mistakesRemaining,
     setMistakesRemaining,
     shuffleUnguessedTiles,
