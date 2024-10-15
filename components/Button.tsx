@@ -22,7 +22,7 @@ export const Button = ({ label, onPress, mode = 'default' }: ButtonProps) => {
   return (
     <Pressable
       style={tw`rounded-full border border-[${borderColor}] bg-[${backgroundColor}] py-3 px-5`}
-      onPress={onPress}
+      onPress={mode !== 'disabled' ? onPress : undefined}
     >
       <Text style={tw`text-base font-semibold text-[${textColor}]`}>{label}</Text>
     </Pressable>
