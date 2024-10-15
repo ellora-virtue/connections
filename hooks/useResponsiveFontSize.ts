@@ -1,21 +1,21 @@
 const TILE_SIZES = {
-  SMALL: 90,
-  MEDIUM: 104,
+  small: 90,
+  medium: 104,
 };
 
-const fontSizes = {
-  SMALL: [
+const FONT_SIZES = {
+  small: [
     { maxChars: 9, size: 10 },
     { maxChars: 8, size: 12 },
     { maxChars: 6, size: 14 },
     { maxChars: 0, size: 16 }, // default
   ],
-  MEDIUM: [
+  medium: [
     { maxChars: 9, size: 12 },
     { maxChars: 6, size: 14 },
     { maxChars: 0, size: 16 }, // default
   ],
-  LARGE: [
+  large: [
     { maxChars: 9, size: 14 },
     { maxChars: 0, size: 16 }, // default
   ],
@@ -27,13 +27,13 @@ export const useResponsiveFontSize = ({ word, tileWidth }: { word: string; tileW
   const getFontSize = (sizes: { maxChars: number; size: number }[]) =>
     sizes.find(({ maxChars }) => characters >= maxChars)?.size || 16;
 
-  if (tileWidth < TILE_SIZES.SMALL) {
-    return getFontSize(fontSizes.SMALL);
+  if (tileWidth < TILE_SIZES.small) {
+    return getFontSize(FONT_SIZES.small);
   }
 
-  if (tileWidth < TILE_SIZES.MEDIUM) {
-    return getFontSize(fontSizes.MEDIUM);
+  if (tileWidth < TILE_SIZES.medium) {
+    return getFontSize(FONT_SIZES.medium);
   }
 
-  return getFontSize(fontSizes.LARGE);
+  return getFontSize(FONT_SIZES.large);
 };
