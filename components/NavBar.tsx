@@ -6,6 +6,7 @@ import { SafeAreaView, View } from 'react-native';
 import tw from 'twrnc';
 
 // TODO: add actions to icons (currently don't do anything)
+// TODO: make icon sizes larger at breakpoint for bigger screens
 
 export const NavBar = () => (
   <SafeAreaView>
