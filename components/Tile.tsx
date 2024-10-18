@@ -7,51 +7,67 @@ import { COLORS } from '../constants';
 import { useConnectionsContext } from '../context';
 import { useResponsiveFontSize } from '../hooks';
 
-type TileProps = {
-  word: TileType['word'];
-};
+// Constants
+//-----------------------------------------------------
 
 const TILE_HEIGHT = 84;
 const MAX_TILE_WIDTH = 112;
 
+// Animated components
+//-----------------------------------------------------
+
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export const Tile = ({ word }: TileProps) => {
+// Types
+//-----------------------------------------------------
+
+type TileProps = {
+  tile: TileType;
+};
+
+export const Tile = ({ tile }: TileProps) => {
   const { tileWidth, tileTextOpacity, selectedTiles, onTilePress } = useConnectionsContext();
-  const fontSize = useResponsiveFontSize({ word, tileWidth });
+  const fontSize = useResponsiveFontSize({ word: tile.word, tileWidth });
+  const isSelected = selectedTiles.has(tile.word);
+
+  // Animations
+  //-----------------------------------------------------
 
   const tileScale = useSharedValue(1);
-  const tileColorProgress = useSharedValue(0);
 
   const animatedTileStyle = useAnimatedStyle(() => ({
     transform: [{ scale: tileScale.value }],
-    backgroundColor: interpolateColor(tileColorProgress.value, [0, 1], [COLORS.surface.light, COLORS.surface.dark]),
+    backgroundColor: interpolateColor(
+      tile.backgroundColorProgress.value,
+      [0, 1],
+      [COLORS.surface.light, COLORS.surface.dark],
+    ),
   }));
 
   const animatedTextStyle = useAnimatedStyle(() => ({
     opacity: tileTextOpacity.value,
   }));
 
-  const isSelected = selectedTiles.has(word);
+  // Handlers
+  //-----------------------------------------------------
 
-  const handleTilePress = () => onTilePress(word);
-
-  // TODO: fix color animation on tile press
-  // Works but first time color doesn't change?
-  // Should I also animate the text color changing?
+  const handleTilePress = () => {
+    onTilePress(tile);
+  };
 
   const handleLongPress = () => {
-    onTilePress(word);
+    onTilePress(tile);
 
     // Scale down to 90% on long press (75ms)
     tileScale.value = withTiming(0.9);
-
-    tileColorProgress.value = withTiming(isSelected ? 1 : 0);
   };
 
   const handlePressOut = () => {
     tileScale.value = withTiming(1); // Scale back to original when released
   };
+
+  // Render
+  //-----------------------------------------------------
 
   return (
     <AnimatedPressable
@@ -71,7 +87,7 @@ export const Tile = ({ word }: TileProps) => {
           tw`text-center font-bold uppercase text-[${fontSize}px] tracking-tight ${isSelected ? 'text-white' : 'text-black'}`,
         ]}
       >
-        {word}
+        {tile.word}
       </Animated.Text>
     </AnimatedPressable>
   );
