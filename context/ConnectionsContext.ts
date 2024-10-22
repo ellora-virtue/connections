@@ -2,7 +2,7 @@ import shuffle from 'lodash/shuffle';
 import { createContext, Dispatch, SetStateAction, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { makeMutable, runOnJS, SharedValue, useSharedValue, withTiming } from 'react-native-reanimated';
-import { Tile } from '../@types';
+import { Tile, TileSlot } from '../@types';
 import { GAME_DATA } from '../data/gameData';
 import { useRequiredContext } from '../hooks';
 
@@ -39,22 +39,20 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
   const tileWidth = (screenWidth - TOTAL_HORIZONTAL_PADDING - TOTAL_TILES_PADDING) / NUMBER_OF_TILES;
   const tileTextOpacity = useSharedValue(1);
 
-  const [unguessedTiles, setUnguessedTiles] = useState<Map<string, Tile>>(
-    () =>
-      new Map(
-        GAME_DATA.flatMap((category) =>
-          category.words.map((word) => [
-            word,
-            {
-              word,
-              category: category.category,
-              difficulty: category.difficulty,
-              backgroundColorProgress: makeMutable(0),
-            },
-          ]),
-        ),
+  const [unguessedTiles, setUnguessedTiles] = useState<Map<string, Tile>>(() => {
+    const processedData = shuffle(
+      GAME_DATA.flatMap(({ words, category, difficulty }) =>
+        words.map((word) => ({
+          word,
+          category,
+          difficulty,
+          backgroundColorProgress: makeMutable(0),
+        })),
       ),
-  );
+    );
+
+    return new Map(processedData.map((tile, index) => [tile.word, { ...tile, slot: index as TileSlot }]));
+  });
 
   const [selectedTiles, setSelectedTiles] = useState<Set<Tile['word']>>(new Set());
   const [mistakesRemaining, setMistakesRemaining] = useState(4);
@@ -109,7 +107,18 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
   };
 
   const shuffleTiles = () => {
-    setUnguessedTiles((prev) => new Map(shuffle(Array.from(prev.entries()))));
+    setUnguessedTiles((prev) => {
+      const newTilesArray = shuffle(Array.from(prev.values()));
+      return new Map(
+        newTilesArray.map((tile, index) => [
+          tile.word,
+          {
+            ...tile,
+            slot: index as TileSlot,
+          },
+        ]),
+      );
+    });
 
     // Animations
     animateSelectedTilesBgColor({ newValue: 1 });
