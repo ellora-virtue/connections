@@ -9,7 +9,8 @@ import { useRequiredContext } from '../hooks';
 const TOTAL_HORIZONTAL_PADDING = 16;
 const TOTAL_TILES_PADDING = 24;
 const NUMBER_OF_TILES = 4;
-const SHUFFLE_ANIMATION_IN_MS = 150;
+const TILE_BG_ANIMATION_IN_MS = 200;
+const SHUFFLE_ANIMATION_IN_MS = 250;
 
 export type ConnectionsContextValue = {
   tileWidth: number;
@@ -63,7 +64,7 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
     const isSelected = selectedTiles.has(word);
 
     if (isSelected) {
-      backgroundColorProgress.value = withTiming(0, { duration: 150 });
+      backgroundColorProgress.value = withTiming(0, { duration: TILE_BG_ANIMATION_IN_MS });
 
       return setSelectedTiles((prev) => {
         const modifiedTiles = new Set(prev);
@@ -75,7 +76,7 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
     }
 
     if (selectedTiles.size < 4) {
-      backgroundColorProgress.value = withTiming(1, { duration: 150 });
+      backgroundColorProgress.value = withTiming(1, { duration: TILE_BG_ANIMATION_IN_MS });
 
       return setSelectedTiles((prev) => {
         const modifiedTiles = new Set(prev);
@@ -87,32 +88,36 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
     }
   };
 
-  const handleDeselectAll = () => {
+  const animateSelectedTilesBgColor = ({ newValue }: { newValue: number }) => {
     selectedTiles.forEach((tile) => {
       const unguessedTile = unguessedTiles.get(tile);
 
-      if (unguessedTile == null) return;
-
-      unguessedTile.backgroundColorProgress.value = withTiming(0, { duration: 150 });
+      if (unguessedTile != null) {
+        unguessedTile.backgroundColorProgress.value = withTiming(newValue, { duration: SHUFFLE_ANIMATION_IN_MS });
+      }
     });
-
-    setSelectedTiles(new Set());
   };
 
   const shuffleUnguessedTiles = () => {
-    // Fade out first
+    // Animations
+    animateSelectedTilesBgColor({ newValue: 0 });
     tileTextOpacity.value = withTiming(0, { duration: SHUFFLE_ANIMATION_IN_MS }, (isFinished) => {
-      if (isFinished === true) {
-        // Shuffle and fade back in
-        runOnJS(shuffleTiles)();
-      }
+      if (isFinished === true) runOnJS(shuffleTiles)();
     });
   };
 
   const shuffleTiles = () => {
     setUnguessedTiles((prev) => new Map(shuffle(Array.from(prev.entries()))));
 
+    // Animations
+    animateSelectedTilesBgColor({ newValue: 1 });
     tileTextOpacity.value = withTiming(1, { duration: SHUFFLE_ANIMATION_IN_MS });
+  };
+
+  const handleDeselectAll = () => {
+    animateSelectedTilesBgColor({ newValue: 0 });
+
+    setSelectedTiles(new Set());
   };
 
   return {
