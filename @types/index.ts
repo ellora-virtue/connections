@@ -1,6 +1,6 @@
 import { SharedValue } from 'react-native-reanimated';
 
-export type TileLayout = { x: number; y: number };
+export type TilePosition = { x: number; y: number };
 
 export type Difficulty = 1 | 2 | 3 | 4;
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { LayoutChangeEvent, Pressable } from 'react-native';
 import Animated, { interpolateColor, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import tw from 'twrnc';
-import { TileLayout, Tile as TileType } from '../@types';
+import { TilePosition, Tile as TileType } from '../@types';
 import { COLORS } from '../constants';
 import { useConnectionsContext } from '../context';
 import { useResponsiveFontSize } from '../hooks';
@@ -23,7 +23,7 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 type TileProps = {
   tile: TileType;
-  onLayout: (layout: TileLayout) => void;
+  onLayout: (position: TilePosition) => void;
 };
 
 export const Tile = ({ tile, onLayout }: TileProps) => {

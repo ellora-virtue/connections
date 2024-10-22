@@ -3,7 +3,7 @@ import React, { PropsWithChildren } from 'react';
 import { View } from 'react-native';
 import tw from 'twrnc';
 
-import { TileLayout, Tile as TileType } from '../@types';
+import { TilePosition, Tile as TileType } from '../@types';
 import { useConnectionsContext } from '../context';
 
 import { Tile } from './Tile';
@@ -13,7 +13,7 @@ export const TilesGrid = () => {
 
   const [row1, row2, row3, row4] = chunk(Array.from(unguessedTiles.values()), 4);
 
-  const onLayout = ({ tileWord, layout }: { tileWord: TileType['word']; layout: TileLayout }) => {
+  const onLayout = ({ tileWord, position }: { tileWord: TileType['word']; position: TilePosition }) => {
     setUnguessedTiles((prevTiles) => {
       const updatedTiles = new Map(prevTiles);
       const tileToUpdate = updatedTiles.get(tileWord);
@@ -21,7 +21,7 @@ export const TilesGrid = () => {
       if (tileToUpdate != null) {
         updatedTiles.set(tileWord, {
           ...tileToUpdate,
-          layout,
+          position,
         });
       }
 
@@ -44,10 +44,10 @@ const renderRow = ({
   onLayout,
 }: {
   tiles: TileType[];
-  onLayout: ({ tileWord, layout }: { tileWord: TileType['word']; layout: TileLayout }) => void;
+  onLayout: ({ tileWord, position }: { tileWord: TileType['word']; position: TilePosition }) => void;
 }) =>
   tiles.map((tile) => {
-    const handleLayout = (layout: TileLayout) => onLayout({ tileWord: tile.word, layout });
+    const handleLayout = (position: TilePosition) => onLayout({ tileWord: tile.word, position });
 
     return (
       <Tile
