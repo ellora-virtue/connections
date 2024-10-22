@@ -15,7 +15,7 @@ export type Tile = {
   category: string;
   difficulty: Difficulty;
   backgroundColorProgress: SharedValue<number>;
-  layout?: TileLayout;
+  position?: TilePosition;
 };
 
 export type GameData = [Category, Category, Category, Category];
