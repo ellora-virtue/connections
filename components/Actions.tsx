@@ -5,7 +5,7 @@ import { useConnectionsContext } from '../context';
 import { Button } from './Button';
 
 export const Actions = () => {
-  const { selectedTiles, shuffleUnguessedTiles, handleDeselectAll } = useConnectionsContext();
+  const { selectedTiles, shuffleUnguessedTiles, handleDeselectAll, handleSubmit } = useConnectionsContext();
 
   return (
     <View style={tw`flex-row gap-3`}>
@@ -19,7 +19,7 @@ export const Actions = () => {
         mode={selectedTiles.size === 0 ? 'disabled' : 'default'}
       />
       <Button
-        onPress={handleDeselectAll}
+        onPress={handleSubmit}
         label="Submit"
         mode={selectedTiles.size !== 4 ? 'disabled' : 'active'}
       />

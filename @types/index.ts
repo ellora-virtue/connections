@@ -22,6 +22,7 @@ export type Tile = {
   category: string;
   difficulty: Difficulty;
   backgroundColorProgress: SharedValue<number>;
+  offset: SharedValue<number>;
   position?: TilePosition;
   slot?: TileSlot;
 };

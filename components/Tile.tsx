@@ -37,7 +37,7 @@ export const Tile = ({ tile, onLayout }: TileProps) => {
   const tileScale = useSharedValue(1);
 
   const animatedTileStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: tileScale.value }],
+    transform: [{ scale: tileScale.value }, { translateY: tile.offset.value }],
     backgroundColor: interpolateColor(
       tile.backgroundColorProgress.value,
       [0, 1],
