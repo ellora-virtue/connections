@@ -99,6 +99,7 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
     });
   };
 
+  // TODO: Still a very slight jump in animation when selected tiles change positions. Come back to this?
   const shuffleUnguessedTiles = () => {
     // Animations
     animateSelectedTilesBgColor({ newValue: 0 });

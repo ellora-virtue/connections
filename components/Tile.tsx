@@ -52,7 +52,7 @@ export const Tile = ({ tile, onLayout }: TileProps) => {
   // Handlers
   //-----------------------------------------------------
 
-  // TODO: may also need to track each tile slot's position on the screen for future animations, to move them between positions?
+  // TODO: May also need to track each tile slot's position on the screen for future animations, to move them between positions?
   const handleLayout = (event: LayoutChangeEvent) => {
     event.target.measure((x, y, _width, _height, pageX, pageY) => onLayout({ x: x + pageX, y: y + pageY }));
   };
