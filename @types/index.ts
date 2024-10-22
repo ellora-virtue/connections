@@ -1,5 +1,7 @@
 import { SharedValue } from 'react-native-reanimated';
 
+export type TileLayout = { x: number; y: number };
+
 export type Difficulty = 1 | 2 | 3 | 4;
 
 export type Category = {
@@ -13,6 +15,7 @@ export type Tile = {
   category: string;
   difficulty: Difficulty;
   backgroundColorProgress: SharedValue<number>;
+  layout?: TileLayout;
 };
 
 export type GameData = [Category, Category, Category, Category];

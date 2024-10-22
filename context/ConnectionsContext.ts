@@ -17,6 +17,7 @@ export type ConnectionsContextValue = {
   tileTextOpacity: SharedValue<number>;
 
   unguessedTiles: Map<string, Tile>;
+  setUnguessedTiles: Dispatch<SetStateAction<Map<string, Tile>>>;
 
   selectedTiles: Set<Tile['word']>;
   onTilePress: (tile: Tile) => void;
@@ -124,6 +125,7 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
     tileWidth,
     tileTextOpacity,
     unguessedTiles,
+    setUnguessedTiles,
     selectedTiles,
     onTilePress,
     mistakesRemaining,

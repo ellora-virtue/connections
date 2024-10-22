@@ -1,8 +1,8 @@
 import React from 'react';
-import { Pressable } from 'react-native';
+import { LayoutChangeEvent, Pressable } from 'react-native';
 import Animated, { interpolateColor, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import tw from 'twrnc';
-import { Tile as TileType } from '../@types';
+import { TileLayout, Tile as TileType } from '../@types';
 import { COLORS } from '../constants';
 import { useConnectionsContext } from '../context';
 import { useResponsiveFontSize } from '../hooks';
@@ -23,9 +23,10 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 type TileProps = {
   tile: TileType;
+  onLayout: (layout: TileLayout) => void;
 };
 
-export const Tile = ({ tile }: TileProps) => {
+export const Tile = ({ tile, onLayout }: TileProps) => {
   const { tileWidth, tileTextOpacity, selectedTiles, onTilePress } = useConnectionsContext();
   const fontSize = useResponsiveFontSize({ word: tile.word, tileWidth });
   const isSelected = selectedTiles.has(tile.word);
@@ -50,6 +51,11 @@ export const Tile = ({ tile }: TileProps) => {
 
   // Handlers
   //-----------------------------------------------------
+
+  // TODO: may also need to track each tile slot's position on the screen for future animations, to move them between positions?
+  const handleLayout = (event: LayoutChangeEvent) => {
+    event.target.measure((x, y, _width, _height, pageX, pageY) => onLayout({ x: x + pageX, y: y + pageY }));
+  };
 
   const handleTilePress = () => {
     onTilePress(tile);
@@ -80,6 +86,7 @@ export const Tile = ({ tile }: TileProps) => {
       // Overrides long press default threshold of 300ms
       delayLongPress={75}
       onPressOut={handlePressOut}
+      onLayout={handleLayout}
     >
       <Animated.Text
         style={[
