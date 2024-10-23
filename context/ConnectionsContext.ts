@@ -62,7 +62,8 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
           category,
           difficulty,
           backgroundColorProgress: makeMutable(0),
-          offset: makeMutable(0),
+          offsetX: makeMutable(0),
+          offsetY: makeMutable(0),
         })),
       ),
     );
@@ -166,14 +167,14 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
     setSelectedTiles(new Map());
   };
 
-  const animateSubmit = () => {
+  const animateSubmission = () => {
     Array.from(selectedTiles.values()).forEach((t, index) => {
       const tile = unguessedTiles.get(t.word);
 
-      if (tile == null || tile.offset == null) return;
+      if (tile == null || tile.offsetY == null) return;
 
       const delay = index * SUBMIT_ANIMATION_DELAY_IN_MS;
-      tile.offset.value = withDelay(
+      tile.offsetY.value = withDelay(
         delay,
         withRepeat(withTiming(SUBMIT_VERTICAL_OFFSET, { duration: SUBMIT_ANIMATION_IN_MS }), 2, true),
       );
@@ -181,7 +182,7 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
   };
 
   const handleSubmit = () => {
-    animateSubmit();
+    animateSubmission();
 
     // TODO: other submit functionality
   };
