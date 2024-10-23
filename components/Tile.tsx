@@ -84,7 +84,7 @@ export const Tile = ({ tile, onLayout }: TileProps) => {
       onPress={handleTilePress}
       onLongPress={handleLongPress}
       // Overrides long press default threshold of 300ms
-      delayLongPress={75}
+      delayLongPress={50}
       onPressOut={handlePressOut}
       onLayout={handleLayout}
     >
