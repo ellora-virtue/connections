@@ -28,4 +28,7 @@ export type Tile = {
   slot?: TileSlot;
 };
 
+export type MistakesRemainingDot = { scale: SharedValue<number>; opacity: SharedValue<number> };
+export type MistakesRemaining = MistakesRemainingDot[];
+
 export type GameData = [Category, Category, Category, Category];
