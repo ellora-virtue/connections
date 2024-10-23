@@ -185,6 +185,17 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
     animateSubmission();
 
     // TODO: other submit functionality
+
+    // Incorrect guess:
+    // - change bg color
+    // - shake animation
+    // - if one away, display toast
+    // - if already guessed, display toast
+    // - if not already guessed, decrement mistakes remaining
+
+    // Correct guess:
+    // - Move tiles into highest available row (swap non-guessed tiles in top row with guessed ones)
+    // - Category reveal animation
   };
 
   return {
