@@ -35,7 +35,7 @@ export type ConnectionsContextValue = {
   setUnguessedTiles: Dispatch<SetStateAction<Map<string, Tile>>>;
 
   selectedTiles: Map<Tile['word'], Tile>;
-  onTilePress: (tile: Tile) => void;
+  handleTilePress: (tile: Tile) => void;
 
   mistakesRemaining: MistakesRemaining;
 
@@ -73,12 +73,12 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
   });
 
   const [selectedTiles, setSelectedTiles] = useState<Map<Tile['word'], Tile>>(new Map());
-  const mistakesRemaining = useMemo(
+  const mistakesRemaining: MistakesRemaining = useMemo(
     () => Array.from({ length: 4 }, () => ({ scale: makeMutable(1), opacity: makeMutable(1) })),
     [],
   );
 
-  const onTilePress = (tile: Tile) => {
+  const handleTilePress = (tile: Tile) => {
     const { word, backgroundColorProgress } = tile;
 
     const isSelected = selectedTiles.has(word);
@@ -110,26 +110,37 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
     });
   };
 
-  const animateSelectedTilesBgColor = ({ newValue, duration }: { newValue: number; duration: number }) => {
+  /**
+   * @summary Animates the selected tiles' background color progress
+   * @description Animates between 0 (COLORS.surface.light) - 1 (COLORS.surface.dark) in components/Tile.tsx
+   */
+  const animateSelectedTilesBgColor = ({
+    newValue,
+    duration,
+    delay = 0,
+  }: {
+    newValue: number;
+    duration: number;
+    delay?: number;
+  }) => {
     selectedTiles.forEach((tile) => {
       const unguessedTile = unguessedTiles.get(tile.word);
 
       if (unguessedTile != null) {
-        unguessedTile.backgroundColorProgress.value = withTiming(newValue, { duration });
+        unguessedTile.backgroundColorProgress.value = withDelay(delay, withTiming(newValue, { duration }));
       }
     });
   };
 
   // TODO: Still a very slight jump in animation when selected tiles change positions. Come back to this?
   const shuffleUnguessedTiles = () => {
-    // Animations
     animateSelectedTilesBgColor({ newValue: 0, duration: SHUFFLE_ANIMATION_IN_MS });
     tileTextOpacity.value = withTiming(0, { duration: SHUFFLE_ANIMATION_IN_MS }, (isFinished) => {
-      if (isFinished === true) runOnJS(shuffleTiles)();
+      if (isFinished === true) runOnJS(handleShuffleTiles)();
     });
   };
 
-  const shuffleTiles = () => {
+  const handleShuffleTiles = () => {
     setUnguessedTiles((prev) => {
       const newTilesArray = shuffle(Array.from(prev.values()));
       const newUnguessedTiles = new Map(
@@ -167,11 +178,15 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
 
   const handleDeselectAll = () => {
     animateSelectedTilesBgColor({ newValue: 0, duration: SHUFFLE_ANIMATION_IN_MS });
-
     setSelectedTiles(new Map());
   };
 
-  const animateSubmission = () => {
+  /**
+   * @summary Wave animation - tiles move up and down once each (staggered)
+   * @description Always happens when guess is submitted, regardless of if it's correct or incorrect
+   * @description 600ms
+   */
+  const animateSubmit = () => {
     Array.from(selectedTiles.values()).forEach((t, index) => {
       const tile = unguessedTiles.get(t.word);
 
@@ -185,16 +200,28 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
     });
   };
 
-  const handleMistakesRemaining = () => {
+  /**
+   * @summary Animates the last mistakes remaining dot
+   * @description Dot first becomes 20% larger, before shrinking to 0%. Simultaneously, color of dot animates to 50% opacity
+   * @description 600ms
+   */
+  const animateMistakesRemaining = () => {
     const filteredDots = mistakesRemaining.filter((item) => item.scale.value === 1);
     const lastDot = filteredDots[filteredDots.length - 1];
 
     // Animations
-    lastDot.scale.value = withSequence(withTiming(1.2), withTiming(0));
-    lastDot.opacity.value = withTiming(0.5);
+    if (lastDot != null) {
+      lastDot.scale.value = withSequence(withTiming(1.2), withTiming(0));
+      lastDot.opacity.value = withTiming(0.5);
+    }
   };
 
-  const animateIncorrectGuess = () => {
+  /**
+   * @summary Shake animation - tiles move side to side 4 times simultaneously
+   * @description Happens when guess is incorrect
+   * @description 300ms
+   */
+  const animateIncorrectGuessShake = ({ callback }: { callback: () => void }) => {
     const OFFSET = 4;
     const DURATION = 100;
 
@@ -203,25 +230,25 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
 
       if (tile == null || tile.offsetX == null) return;
 
-      // TODO: extract into util fn?
       tile.offsetX.value = withSequence(
         withTiming(-OFFSET, { duration: DURATION / 2 }),
         withRepeat(withTiming(OFFSET, { duration: DURATION }), 2, true),
-        withTiming(0, { duration: DURATION / 2 }),
+        withTiming(0, { duration: DURATION / 2 }, (isFinished) => {
+          if (isFinished === true) runOnJS(callback)();
+        }),
       );
     });
   };
 
-  const incorrectGuessAnimations = () => {
-    animateSelectedTilesBgColor({ newValue: 0.8, duration: 0 });
-    handleMistakesRemaining(); // TODO: only call this if not already guessed
-    animateIncorrectGuess();
-  };
-
   const handleIncorrectGuess = ({ isOneAway }: { isOneAway: boolean }) => {
-    incorrectGuessAnimations();
+    // Animations
+    animateSelectedTilesBgColor({ newValue: 0.8, duration: 0 });
+    animateMistakesRemaining(); // TODO: only call this if not already guessed
+    animateIncorrectGuessShake({
+      callback: () => animateSelectedTilesBgColor({ newValue: 1, duration: 0, delay: 500 }),
+    });
 
-    // TODO: show toasts if applicable, track guesses
+    // TODO: show toasts if applicable, track guesses, change bg color back to 1
   };
 
   const handleSubmit = () => {
@@ -230,12 +257,15 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
       selectedTiles: Array.from(selectedTiles.values()).map((tile) => tile.word),
     });
 
-    // TODO: need to figure out how to do these animations sequentially - currently happen in simultaneously
-    animateSubmission();
+    animateSubmit();
 
     if (matchingCategory == null) {
       // Incorrect guess
-      handleIncorrectGuess({ isOneAway });
+
+      // TODO: figure out nicer way of delaying this animation set
+      setTimeout(() => {
+        handleIncorrectGuess({ isOneAway });
+      }, 1000); // 600ms + 400ms additional delay
     } else {
       // Correct guess
     }
@@ -260,7 +290,7 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
     unguessedTiles,
     setUnguessedTiles,
     selectedTiles,
-    onTilePress,
+    handleTilePress,
     mistakesRemaining,
     shuffleUnguessedTiles,
     handleDeselectAll,

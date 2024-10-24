@@ -27,7 +27,7 @@ type TileProps = {
 };
 
 export const Tile = ({ tile, onLayout }: TileProps) => {
-  const { tileWidth, tileTextOpacity, selectedTiles, onTilePress } = useConnectionsContext();
+  const { tileWidth, tileTextOpacity, selectedTiles, handleTilePress } = useConnectionsContext();
   const fontSize = useResponsiveFontSize({ word: tile.word, tileWidth });
   const isSelected = selectedTiles.has(tile.word);
 
@@ -57,12 +57,12 @@ export const Tile = ({ tile, onLayout }: TileProps) => {
     event.target.measure((x, y, _width, _height, pageX, pageY) => onLayout({ x: x + pageX, y: y + pageY }));
   };
 
-  const handleTilePress = () => {
-    onTilePress(tile);
+  const handleTileRegularPress = () => {
+    handleTilePress(tile);
   };
 
-  const handleLongPress = () => {
-    onTilePress(tile);
+  const handleTileLongPress = () => {
+    handleTilePress(tile);
 
     // Scale down to 90% on long press (75ms)
     tileScale.value = withTiming(0.9);
@@ -81,8 +81,8 @@ export const Tile = ({ tile, onLayout }: TileProps) => {
         animatedTileStyle,
         tw`items-center justify-center rounded-lg px-2 py-4 w-[${tileWidth}px] max-w-[${MAX_TILE_WIDTH}px] h-[${TILE_HEIGHT}px]`,
       ]}
-      onPress={handleTilePress}
-      onLongPress={handleLongPress}
+      onPress={handleTileRegularPress}
+      onLongPress={handleTileLongPress}
       // Overrides long press default threshold of 300ms
       delayLongPress={50}
       onPressOut={handlePressOut}
