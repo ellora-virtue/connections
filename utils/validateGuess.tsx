@@ -1,7 +1,5 @@
 import { Category, GameData, Tile } from '../@types';
 
-// TODO: write unit test for this function
-
 export const validateGuess = ({
   data,
   selectedTiles,
