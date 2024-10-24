@@ -18,6 +18,7 @@
     "react-dom": "18.2.0",
     "react-native": "0.74.5",
     "react-native-reanimated": "^3.10.1",
+    "react-native-toast-message": "^2.2.1",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.10",
     "twrnc": "^4.5.1"
