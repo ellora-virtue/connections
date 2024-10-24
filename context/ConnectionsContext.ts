@@ -11,10 +11,11 @@ import {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+import Toast from 'react-native-toast-message';
 import { MistakesRemaining, Tile, TileSlot } from '../@types';
 import { GAME_DATA } from '../data/gameData';
 import { useRequiredContext } from '../hooks';
-import { validateGuess } from '../utils';
+import { processSelectedTiles, validateGuess } from '../utils';
 
 const TOTAL_HORIZONTAL_PADDING = 16;
 const TOTAL_TILES_PADDING = 24;
@@ -246,13 +247,25 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
   const handleIncorrectGuess = ({ isOneAway }: { isOneAway: boolean }) => {
     // Animations
     animateSelectedTilesBgColor({ newValue: 0.8, duration: 0 });
-    animateMistakesRemaining(); // TODO: only call this if not already guessed
     animateIncorrectGuessShake({
       callback: () => animateSelectedTilesBgColor({ newValue: 1, duration: 0, delay: 500 }),
     });
 
     const processedIncorrectGuess = processSelectedTiles({ tiles: selectedTiles });
     const isAlreadyGuessed = incorrectGuesses.has(processedIncorrectGuess);
+
+    if (mistakesRemaining.every((item) => item.scale.value === 0)) {
+      Toast.show({ text1: 'Next time' });
+      // TODO: handle no guesses left case (reveal answers)
+    } else if (isAlreadyGuessed) {
+      Toast.show({ text1: 'Already guessed!' });
+    } else if (isOneAway) {
+      Toast.show({ text1: 'One away...' });
+    }
+
+    if (!isAlreadyGuessed) {
+      animateMistakesRemaining();
+    }
 
     setIncorrectGuesses((prev) => {
       const modifiedSet = new Set(prev);
@@ -279,15 +292,6 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
     } else {
       // Correct guess
     }
-
-    // Incorrect guess:
-    // - change bg color
-    // - shake animation
-    // - mistakes remaining animation/decrement
-    // - if one away, display toast
-    // - if already guessed, display toast
-    // - if not already guessed, decrement mistakes remaining
-    // - add to tracked guesses
 
     // Correct guess:
     // - Move tiles into highest available row (swap non-guessed tiles in top row with guessed ones)
