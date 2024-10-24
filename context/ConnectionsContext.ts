@@ -72,6 +72,9 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
     return new Map(processedData.map((tile, index) => [tile.word, { ...tile, slot: index as TileSlot }]));
   });
 
+  // Incorrect guesses stored as alphabetised, stringified arrays for easy look-up
+  const [incorrectGuesses, setIncorrectGuesses] = useState<Set<string>>(new Set());
+
   const [selectedTiles, setSelectedTiles] = useState<Map<Tile['word'], Tile>>(new Map());
   const mistakesRemaining: MistakesRemaining = useMemo(
     () => Array.from({ length: 4 }, () => ({ scale: makeMutable(1), opacity: makeMutable(1) })),
@@ -248,7 +251,14 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
       callback: () => animateSelectedTilesBgColor({ newValue: 1, duration: 0, delay: 500 }),
     });
 
-    // TODO: show toasts if applicable, track guesses, change bg color back to 1
+    const processedIncorrectGuess = processSelectedTiles({ tiles: selectedTiles });
+    const isAlreadyGuessed = incorrectGuesses.has(processedIncorrectGuess);
+
+    setIncorrectGuesses((prev) => {
+      const modifiedSet = new Set(prev);
+      modifiedSet.add(processedIncorrectGuess);
+      return modifiedSet;
+    });
   };
 
   const handleSubmit = () => {
