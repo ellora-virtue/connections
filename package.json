@@ -11,7 +11,7 @@
   "dependencies": {
     "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
     "@expo/metro-runtime": "~3.2.3",
-    "expo": "~51.0.28",
+    "expo": "^51.0.38",
     "expo-status-bar": "~1.12.1",
     "lodash": "^4.17.21",
     "react": "18.2.0",
