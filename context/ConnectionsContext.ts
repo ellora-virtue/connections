@@ -1,18 +1,16 @@
 import shuffle from 'lodash/shuffle';
 import { createContext, Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
-import {
-  makeMutable,
-  runOnJS,
-  SharedValue,
-  useSharedValue,
-  withDelay,
-  withRepeat,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated';
+import { makeMutable, runOnJS, SharedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
 import { MistakesRemaining, Tile, TileSlot } from '../@types';
+import {
+  animateIncorrectGuess,
+  animateMistakesRemaining,
+  animateSelectedTilesBgColor,
+  animateSubmit,
+  animateTileBgColorProgress,
+} from '../animations';
 import { GAME_DATA } from '../data/gameData';
 import { useRequiredContext } from '../hooks';
 import { processSelectedTiles, validateGuess } from '../utils';
@@ -24,9 +22,6 @@ const NUMBER_OF_TILES = 4;
 // Animation constants
 const TILE_BG_ANIMATION_IN_MS = 200;
 const SHUFFLE_ANIMATION_IN_MS = 250;
-const SUBMIT_VERTICAL_OFFSET = -10;
-const SUBMIT_ANIMATION_IN_MS = 150;
-const SUBMIT_ANIMATION_DELAY_IN_MS = 100;
 
 export type ConnectionsContextValue = {
   tileWidth: number;
@@ -77,19 +72,19 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
   const [incorrectGuesses, setIncorrectGuesses] = useState<Set<string>>(new Set());
 
   const [selectedTiles, setSelectedTiles] = useState<Map<Tile['word'], Tile>>(new Map());
+
   const mistakesRemaining: MistakesRemaining = useMemo(
     () => Array.from({ length: 4 }, () => ({ scale: makeMutable(1), opacity: makeMutable(1) })),
     [],
   );
 
   const handleTilePress = (tile: Tile) => {
-    const { word, backgroundColorProgress } = tile;
-
+    const { word } = tile;
     const isSelected = selectedTiles.has(word);
 
     if (isSelected) {
       // Tile is already selected - remove from selectedTiles map
-      backgroundColorProgress.value = withTiming(0, { duration: TILE_BG_ANIMATION_IN_MS });
+      animateTileBgColorProgress({ tile, newValue: 0, duration: TILE_BG_ANIMATION_IN_MS });
 
       return setSelectedTiles((prev) => {
         const modifiedTiles = new Map(prev);
@@ -102,7 +97,7 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
     if (selectedTiles.size >= 4) return;
 
     // Tile is unselected - add to selectedTiles map
-    backgroundColorProgress.value = withTiming(1, { duration: TILE_BG_ANIMATION_IN_MS });
+    animateTileBgColorProgress({ tile, newValue: 1, duration: TILE_BG_ANIMATION_IN_MS });
 
     return setSelectedTiles((prev) => {
       const modifiedTiles = new Map(prev);
@@ -114,31 +109,9 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
     });
   };
 
-  /**
-   * @summary Animates the selected tiles' background color progress
-   * @description Animates between 0 (COLORS.surface.light) - 1 (COLORS.surface.dark) in components/Tile.tsx
-   */
-  const animateSelectedTilesBgColor = ({
-    newValue,
-    duration,
-    delay = 0,
-  }: {
-    newValue: number;
-    duration: number;
-    delay?: number;
-  }) => {
-    selectedTiles.forEach((tile) => {
-      const unguessedTile = unguessedTiles.get(tile.word);
-
-      if (unguessedTile != null) {
-        unguessedTile.backgroundColorProgress.value = withDelay(delay, withTiming(newValue, { duration }));
-      }
-    });
-  };
-
-  // TODO: Still a very slight jump in animation when selected tiles change positions. Come back to this?
   const shuffleUnguessedTiles = () => {
-    animateSelectedTilesBgColor({ newValue: 0, duration: SHUFFLE_ANIMATION_IN_MS });
+    // TODO: Still a very slight jump in animation when selected tiles change positions. Come back to this?
+    animateSelectedTilesBgColor({ selectedTiles, unguessedTiles, newValue: 0, duration: SHUFFLE_ANIMATION_IN_MS });
     tileTextOpacity.value = withTiming(0, { duration: SHUFFLE_ANIMATION_IN_MS }, (isFinished) => {
       if (isFinished === true) runOnJS(handleShuffleTiles)();
     });
@@ -176,79 +149,23 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
     });
 
     // Animations
-    animateSelectedTilesBgColor({ newValue: 1, duration: SHUFFLE_ANIMATION_IN_MS });
+    animateSelectedTilesBgColor({ selectedTiles, unguessedTiles, newValue: 1, duration: SHUFFLE_ANIMATION_IN_MS });
     tileTextOpacity.value = withTiming(1, { duration: SHUFFLE_ANIMATION_IN_MS });
   };
 
   const handleDeselectAll = () => {
-    animateSelectedTilesBgColor({ newValue: 0, duration: SHUFFLE_ANIMATION_IN_MS });
+    animateSelectedTilesBgColor({ selectedTiles, unguessedTiles, newValue: 0, duration: SHUFFLE_ANIMATION_IN_MS });
     setSelectedTiles(new Map());
-  };
-
-  /**
-   * @summary Wave animation - tiles move up and down once each (staggered)
-   * @description Always happens when guess is submitted, regardless of if it's correct or incorrect
-   * @description 600ms
-   */
-  const animateSubmit = () => {
-    Array.from(selectedTiles.values()).forEach((t, index) => {
-      const tile = unguessedTiles.get(t.word);
-
-      if (tile == null || tile.offsetY == null) return;
-
-      const delay = index * SUBMIT_ANIMATION_DELAY_IN_MS;
-      tile.offsetY.value = withDelay(
-        delay,
-        withRepeat(withTiming(SUBMIT_VERTICAL_OFFSET, { duration: SUBMIT_ANIMATION_IN_MS }), 2, true),
-      );
-    });
-  };
-
-  /**
-   * @summary Animates the last mistakes remaining dot
-   * @description Dot first becomes 20% larger, before shrinking to 0%. Simultaneously, color of dot animates to 50% opacity
-   * @description 600ms
-   */
-  const animateMistakesRemaining = () => {
-    const filteredDots = mistakesRemaining.filter((item) => item.scale.value === 1);
-    const lastDot = filteredDots[filteredDots.length - 1];
-
-    // Animations
-    if (lastDot != null) {
-      lastDot.scale.value = withSequence(withTiming(1.2), withTiming(0));
-      lastDot.opacity.value = withTiming(0.5);
-    }
-  };
-
-  /**
-   * @summary Shake animation - tiles move side to side 4 times simultaneously
-   * @description Happens when guess is incorrect
-   * @description 300ms
-   */
-  const animateIncorrectGuessShake = ({ callback }: { callback: () => void }) => {
-    const OFFSET = 4;
-    const DURATION = 100;
-
-    Array.from(selectedTiles.values()).forEach((t) => {
-      const tile = unguessedTiles.get(t.word);
-
-      if (tile == null || tile.offsetX == null) return;
-
-      tile.offsetX.value = withSequence(
-        withTiming(-OFFSET, { duration: DURATION / 2 }),
-        withRepeat(withTiming(OFFSET, { duration: DURATION }), 2, true),
-        withTiming(0, { duration: DURATION / 2 }, (isFinished) => {
-          if (isFinished === true) runOnJS(callback)();
-        }),
-      );
-    });
   };
 
   const handleIncorrectGuess = ({ isOneAway }: { isOneAway: boolean }) => {
     // Animations
-    animateSelectedTilesBgColor({ newValue: 0.8, duration: 0 });
-    animateIncorrectGuessShake({
-      callback: () => animateSelectedTilesBgColor({ newValue: 1, duration: 0, delay: 500 }),
+    animateSelectedTilesBgColor({ selectedTiles, unguessedTiles, newValue: 0.8, duration: 0 });
+    animateIncorrectGuess({
+      selectedTiles,
+      unguessedTiles,
+      callback: () =>
+        animateSelectedTilesBgColor({ selectedTiles, unguessedTiles, newValue: 1, duration: 0, delay: 500 }),
     });
 
     const processedIncorrectGuess = processSelectedTiles({ tiles: selectedTiles });
@@ -264,7 +181,7 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
     }
 
     if (!isAlreadyGuessed) {
-      animateMistakesRemaining();
+      animateMistakesRemaining({ mistakesRemaining });
     }
 
     setIncorrectGuesses((prev) => {
@@ -280,7 +197,7 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
       selectedTiles: Array.from(selectedTiles.values()).map((tile) => tile.word),
     });
 
-    animateSubmit();
+    animateSubmit({ selectedTiles, unguessedTiles });
 
     if (matchingCategory == null) {
       // Incorrect guess
@@ -291,11 +208,10 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
       }, 1000); // 600ms + 400ms additional delay
     } else {
       // Correct guess
+      // TODO:
+      // - Move tiles into highest available row (swap non-guessed tiles in top row with guessed ones)
+      // - Category reveal animation
     }
-
-    // Correct guess:
-    // - Move tiles into highest available row (swap non-guessed tiles in top row with guessed ones)
-    // - Category reveal animation
   };
 
   return {
