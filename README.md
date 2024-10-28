@@ -56,4 +56,4 @@ Or run the project on web:
 npm run web
 ```
 
-The development server should automatically open a localhost URL (e.g. http://localhost:3001) where you can access the app on a web browser.
+The development server should automatically open a localhost URL (e.g. http://localhost:8081) where you can access the app on a web browser.
