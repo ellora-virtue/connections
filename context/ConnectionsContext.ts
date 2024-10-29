@@ -13,7 +13,7 @@ import {
 } from '../animations';
 import { GAME_DATA } from '../data/gameData';
 import { useRequiredContext } from '../hooks';
-import { processSelectedTiles, validateGuess } from '../utils';
+import { processSelectedTiles, sortTilesBySlot, validateGuess } from '../utils';
 
 const TOTAL_HORIZONTAL_PADDING = 16;
 const TOTAL_TILES_PADDING = 24;
@@ -71,6 +71,7 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
   // Incorrect guesses stored as alphabetised, stringified arrays for easy look-up
   const [incorrectGuesses, setIncorrectGuesses] = useState<Set<string>>(new Set());
 
+  // Stored in order of `slot` property - used for animations
   const [selectedTiles, setSelectedTiles] = useState<Map<Tile['word'], Tile>>(new Map());
 
   const mistakesRemaining: MistakesRemaining = useMemo(
@@ -103,9 +104,7 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
       const modifiedTiles = new Map(prev);
       modifiedTiles.set(word, tile);
 
-      return new Map(
-        Array.from(modifiedTiles.entries()).sort(([_keyA, a], [_keyB, b]) => (a.slot ?? 0) - (b.slot ?? 0)),
-      );
+      return new Map(sortTilesBySlot({ tiles: modifiedTiles }));
     });
   };
 
@@ -139,10 +138,7 @@ export const useProvideConnectionsState = (): ConnectionsContextValue => {
           }),
         );
 
-        return new Map(
-          // TODO: Extract sort function
-          Array.from(updatedSelectedTiles.entries()).sort(([_keyA, a], [_keyB, b]) => (a.slot ?? 0) - (b.slot ?? 0)),
-        );
+        return new Map(sortTilesBySlot({ tiles: updatedSelectedTiles }));
       });
 
       return newUnguessedTiles;
