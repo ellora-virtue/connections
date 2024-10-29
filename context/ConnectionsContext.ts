@@ -27,7 +27,7 @@ export type ConnectionsContextValue = {
   tileWidth: number;
   tileTextOpacity: SharedValue<number>;
 
-  unguessedTiles: Map<string, Tile>;
+  unguessedTiles: Map<Tile['word'], Tile>;
   setUnguessedTiles: Dispatch<SetStateAction<Map<string, Tile>>>;
 
   selectedTiles: Map<Tile['word'], Tile>;
